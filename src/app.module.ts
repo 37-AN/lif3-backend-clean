@@ -40,8 +40,8 @@ import { BusinessStrategyModule } from './modules/business-strategy/business-str
     // Logging module
     LoggerModule,
     
-    // Database module - temporarily disabled due to SQLite enum issues
-    // DatabaseModule,
+    // Database module 
+    DatabaseModule,
     
     // RAG & Semantic Search module
     RAGModule,

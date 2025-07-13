@@ -16,25 +16,54 @@ import { SecurityEvent } from './entities/security-event.entity';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'sqlite',
-        database: './storage/lif3_database.sqlite',
-        entities: [
-          User,
-          Transaction,
-          Account,
-          AccountBalance,
-          NetWorthSnapshot,
-          BusinessMetrics,
-          Goal,
-          AuditLog,
-          SecurityEvent,
-        ],
-        synchronize: configService.get('NODE_ENV') !== 'production',
-        logging: configService.get('NODE_ENV') === 'development',
-        retryAttempts: 3,
-        retryDelay: 3000,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const databaseUrl = configService.get('DATABASE_URL');
+        
+        if (databaseUrl) {
+          // Production PostgreSQL configuration
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            ssl: configService.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
+            entities: [
+              User,
+              Transaction,
+              Account,
+              AccountBalance,
+              NetWorthSnapshot,
+              BusinessMetrics,
+              Goal,
+              AuditLog,
+              SecurityEvent,
+            ],
+            synchronize: configService.get('NODE_ENV') !== 'production',
+            logging: configService.get('NODE_ENV') === 'development',
+            retryAttempts: 3,
+            retryDelay: 3000,
+          };
+        } else {
+          // Development SQLite configuration
+          return {
+            type: 'sqlite',
+            database: './storage/lif3_database.sqlite',
+            entities: [
+              User,
+              Transaction,
+              Account,
+              AccountBalance,
+              NetWorthSnapshot,
+              BusinessMetrics,
+              Goal,
+              AuditLog,
+              SecurityEvent,
+            ],
+            synchronize: configService.get('NODE_ENV') !== 'production',
+            logging: configService.get('NODE_ENV') === 'development',
+            retryAttempts: 3,
+            retryDelay: 3000,
+          };
+        }
+      },
     }),
     TypeOrmModule.forFeature([
       User,

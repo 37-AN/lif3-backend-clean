@@ -49,21 +49,34 @@ export class HealthService {
   }
 
   async checkConnectionStatus() {
-    const tester = new ConnectionTester();
-    const results = await tester.runAllTests();
-    
-    const summary = {
-      total: results.length,
-      successful: results.filter(r => r.status === 'success').length,
-      failed: results.filter(r => r.status === 'failed').length,
-      skipped: results.filter(r => r.status === 'skipped').length
-    };
+    try {
+      const tester = new ConnectionTester();
+      const results = await tester.runAllTests();
+      
+      const summary = {
+        total: results.length,
+        successful: results.filter(r => r.status === 'success').length,
+        failed: results.filter(r => r.status === 'failed').length,
+        skipped: results.filter(r => r.status === 'skipped').length
+      };
 
-    return {
-      summary,
-      connections: results,
-      overall: summary.failed === 0 ? 'healthy' : 'degraded',
-      timestamp: new Date().toISOString()
-    };
+      return {
+        summary,
+        connections: results,
+        overall: summary.failed === 0 ? 'healthy' : 'degraded',
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        summary: { total: 0, successful: 0, failed: 1, skipped: 0 },
+        connections: [{
+          service: 'Connection Tests',
+          status: 'failed' as const,
+          message: `Connection tests failed: ${error.message}`
+        }],
+        overall: 'degraded',
+        timestamp: new Date().toISOString()
+      };
+    }
   }
 }
