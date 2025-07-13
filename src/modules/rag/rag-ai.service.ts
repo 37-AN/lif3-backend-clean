@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { get_encoding } from 'tiktoken';
+// import { get_encoding } from 'tiktoken';
 import { RAGService } from './rag.service';
 import { ClaudeAIService } from '../integrations/claude-ai.service';
 import { LoggerService } from '../../common/logger/logger.service';
@@ -21,7 +21,7 @@ export class RAGAIService {
     private readonly claudeAIService: ClaudeAIService,
     private readonly loggerService: LoggerService
   ) {
-    this.tokenizer = get_encoding('cl100k_base');
+    // this.tokenizer = get_encoding('cl100k_base');
   }
 
   async generateRAGResponse(queryDto: RAGQueryDto): Promise<RAGResponse> {

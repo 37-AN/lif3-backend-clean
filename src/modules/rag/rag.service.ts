@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { pipeline } from '@xenova/transformers';
-import { get_encoding } from 'tiktoken';
+// import { pipeline } from '@xenova/transformers';
+// import { get_encoding } from 'tiktoken';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -53,18 +53,16 @@ export class RAGService implements OnModuleInit {
 
   private async initializeRAGSystem(): Promise<void> {
     try {
-      // Initialize ChromaDB client
-      const chromadb = await import('chromadb');
-      this.chromaClient = new chromadb.ChromaClient();
-
-      // Initialize tokenizer
-      this.tokenizer = get_encoding('cl100k_base');
+      // ChromaDB and tokenizer disabled for deployment
+      // const chromadb = await import('chromadb');
+      // this.chromaClient = new chromadb.ChromaClient();
+      // this.tokenizer = get_encoding('cl100k_base');
 
       // Initialize embedding pipeline (lazy-loaded on first use)
       // this.embeddingPipeline = await pipeline('feature-extraction', this.config.embeddingModel);
 
-      // Create or get collection
-      await this.initializeCollection();
+      // Collection initialization disabled for deployment
+      // await this.initializeCollection();
 
       // Ensure storage directory exists
       await fs.mkdir(path.dirname(this.config.persistPath), { recursive: true });
@@ -97,8 +95,8 @@ export class RAGService implements OnModuleInit {
   private async initializeCollection(): Promise<void> {
     try {
       // Import the default embedding function
-      const { DefaultEmbeddingFunction } = await import('@chroma-core/default-embed');
-      const embedFunction = new DefaultEmbeddingFunction();
+      // DefaultEmbeddingFunction disabled for deployment
+      throw new Error('ChromaDB not available in deployment mode');
 
       // Try to get existing collection
       this.collection = await this.chromaClient.getCollection({
@@ -107,8 +105,8 @@ export class RAGService implements OnModuleInit {
       });
     } catch (error) {
       // Create new collection if it doesn't exist
-      const { DefaultEmbeddingFunction } = await import('@chroma-core/default-embed');
-      const embedFunction = new DefaultEmbeddingFunction();
+      // DefaultEmbeddingFunction disabled for deployment
+      throw new Error('ChromaDB not available in deployment mode');
       
       this.collection = await this.chromaClient.createCollection({
         name: this.config.collectionName,
@@ -377,7 +375,7 @@ export class RAGService implements OnModuleInit {
   private async initializeEmbeddingPipeline(): Promise<void> {
     if (!this.embeddingPipeline) {
       try {
-        this.embeddingPipeline = await pipeline('feature-extraction', this.config.embeddingModel);
+        // this.embeddingPipeline = await pipeline('feature-extraction', this.config.embeddingModel);
         this.logger.log('Embedding pipeline initialized successfully');
       } catch (error) {
         this.logger.error(`Failed to initialize embedding pipeline: ${error.message}`);

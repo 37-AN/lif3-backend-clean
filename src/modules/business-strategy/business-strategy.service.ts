@@ -20,41 +20,18 @@ export class BusinessStrategyService implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      const chromadb = await import('chromadb');
-      this.chromaClient = new chromadb.ChromaClient();
-      await this.initializeCollection();
-      this.isInitialized = true;
-      this.logger.log('BusinessStrategyService initialized with ChromaDB');
+      // ChromaDB disabled for deployment - using fallback strategy
+      this.isInitialized = false;
+      this.logger.log('BusinessStrategyService initialized without ChromaDB (deployment mode)');
     } catch (error) {
-      this.logger.error(`Failed to initialize ChromaDB: ${error.message}`);
+      this.logger.error(`Failed to initialize: ${error.message}`);
       this.isInitialized = false;
     }
   }
 
   private async initializeCollection(): Promise<void> {
-    try {
-      // Import the default embedding function
-      const { DefaultEmbeddingFunction } = await import('@chroma-core/default-embed');
-      const embedFunction = new DefaultEmbeddingFunction();
-
-      this.collection = await this.chromaClient.getCollection({
-        name: this.collectionName,
-        embeddingFunction: embedFunction
-      });
-    } catch (error) {
-      // Create new collection if it doesn't exist
-      const { DefaultEmbeddingFunction } = await import('@chroma-core/default-embed');
-      const embedFunction = new DefaultEmbeddingFunction();
-      
-      this.collection = await this.chromaClient.createCollection({
-        name: this.collectionName,
-        embeddingFunction: embedFunction,
-        metadata: {
-          description: 'Business Strategy Data'
-        }
-      });
-      this.logger.log(`Created new ChromaDB collection: ${this.collectionName}`);
-    }
+    // ChromaDB disabled for deployment - using fallback
+    this.logger.log('ChromaDB collection initialization skipped (deployment mode)');
   }
 
   // Fetch the current business strategy from ChromaDB

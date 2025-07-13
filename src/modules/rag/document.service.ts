@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as pdfParse from 'pdf-parse';
-import * as mammoth from 'mammoth';
+// import * as pdfParse from 'pdf-parse';
+// import * as mammoth from 'mammoth';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { DocumentMetadata, DocumentCategory } from './interfaces/rag.interface';
@@ -68,8 +68,8 @@ export class DocumentService {
   private async extractPdfContent(filePath: string): Promise<string> {
     try {
       const buffer = await fs.readFile(filePath);
-      const data = await pdfParse(buffer);
-      return data.text;
+      // PDF parsing disabled for deployment
+      throw new Error('PDF extraction not available in deployment mode');
     } catch (error) {
       throw new Error(`PDF extraction failed: ${error.message}`);
     }
@@ -78,8 +78,8 @@ export class DocumentService {
   private async extractDocxContent(filePath: string): Promise<string> {
     try {
       const buffer = await fs.readFile(filePath);
-      const result = await mammoth.extractRawText({ buffer });
-      return result.value;
+      // DOCX parsing disabled for deployment
+      throw new Error('DOCX extraction not available in deployment mode');
     } catch (error) {
       throw new Error(`DOCX extraction failed: ${error.message}`);
     }
