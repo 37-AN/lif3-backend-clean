@@ -93,31 +93,8 @@ export class RAGService implements OnModuleInit {
   }
 
   private async initializeCollection(): Promise<void> {
-    try {
-      // Import the default embedding function
-      // DefaultEmbeddingFunction disabled for deployment
-      throw new Error('ChromaDB not available in deployment mode');
-
-      // Try to get existing collection
-      this.collection = await this.chromaClient.getCollection({
-        name: this.config.collectionName,
-        embeddingFunction: embedFunction
-      });
-    } catch (error) {
-      // Create new collection if it doesn't exist
-      // DefaultEmbeddingFunction disabled for deployment
-      throw new Error('ChromaDB not available in deployment mode');
-      
-      this.collection = await this.chromaClient.createCollection({
-        name: this.config.collectionName,
-        embeddingFunction: embedFunction,
-        metadata: {
-          'hnsw:space': 'cosine',
-          description: 'LIF3 Financial Dashboard document embeddings'
-        }
-      });
-      this.logger.log(`Created new ChromaDB collection: ${this.config.collectionName}`);
-    }
+    // ChromaDB disabled for deployment - using fallback
+    throw new Error('ChromaDB not available in deployment mode');
   }
 
   async processDocument(
@@ -326,18 +303,17 @@ export class RAGService implements OnModuleInit {
     metadata: DocumentMetadata
   ): Promise<DocumentChunk[]> {
     const chunks: DocumentChunk[] = [];
-    const tokens = this.tokenizer.encode(content);
     
-    const chunkSizeInTokens = this.config.chunkSize;
-    const overlapInTokens = this.config.chunkOverlap;
+    // Simple character-based chunking since tokenizer is disabled
+    const chunkSizeInChars = this.config.chunkSize * 4; // Rough estimate: 1 token ≈ 4 chars
+    const overlapInChars = this.config.chunkOverlap * 4;
     
     let startIdx = 0;
     let chunkIndex = 0;
     
-    while (startIdx < tokens.length) {
-      const endIdx = Math.min(startIdx + chunkSizeInTokens, tokens.length);
-      const chunkTokens = tokens.slice(startIdx, endIdx);
-      const chunkText = this.tokenizer.decode(chunkTokens);
+    while (startIdx < content.length) {
+      const endIdx = Math.min(startIdx + chunkSizeInChars, content.length);
+      const chunkText = content.slice(startIdx, endIdx);
       
       // Clean chunk text
       const cleanChunkText = chunkText.trim();
@@ -353,7 +329,7 @@ export class RAGService implements OnModuleInit {
           ...metadata,
           chunkIndex,
           totalChunks: 0, // Will be updated after processing
-          tokenCount: chunkTokens.length
+          tokenCount: Math.floor(cleanChunkText.length / 4) // Rough estimate
         }
       };
       
@@ -361,7 +337,7 @@ export class RAGService implements OnModuleInit {
       chunkIndex++;
       
       // Move start position with overlap
-      startIdx = endIdx - overlapInTokens;
+      startIdx = endIdx - overlapInChars;
     }
     
     // Update total chunks count

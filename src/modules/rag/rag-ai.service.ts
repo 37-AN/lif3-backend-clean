@@ -21,7 +21,8 @@ export class RAGAIService {
     private readonly claudeAIService: ClaudeAIService,
     private readonly loggerService: LoggerService
   ) {
-    // this.tokenizer = get_encoding('cl100k_base');
+    // Tokenizer disabled for deployment - using fallback
+    this.tokenizer = null;
   }
 
   async generateRAGResponse(queryDto: RAGQueryDto): Promise<RAGResponse> {
@@ -88,7 +89,7 @@ export class RAGAIService {
         metadata: {
           query: queryDto.query,
           sourcesUsed: sources.length,
-          contextTokens: this.tokenizer.encode(context).length,
+          contextTokens: Math.floor(context.length / 4), // Rough estimate: 1 token ≈ 4 chars
           confidence
         }
       });
@@ -97,7 +98,7 @@ export class RAGAIService {
         response: claudeResponse.response,
         sources,
         contextUsed: context,
-        tokenCount: this.tokenizer.encode(claudeResponse.response).length,
+        tokenCount: Math.floor(claudeResponse.response.length / 4), // Rough estimate: 1 token ≈ 4 chars
         confidence
       };
 
@@ -201,7 +202,7 @@ export class RAGAIService {
         response: claudeResponse.response,
         sources,
         contextUsed: context,
-        tokenCount: this.tokenizer.encode(claudeResponse.response).length,
+        tokenCount: Math.floor(claudeResponse.response.length / 4), // Rough estimate: 1 token ≈ 4 chars
         confidence
       };
 
@@ -234,7 +235,7 @@ export class RAGAIService {
 
     for (const result of searchResults) {
       const chunkText = `\n\n--- Source: ${result.chunk.metadata.fileName} ---\n${result.chunk.content}`;
-      const chunkTokens = this.tokenizer.encode(chunkText).length;
+      const chunkTokens = Math.floor(chunkText.length / 4); // Rough estimate: 1 token ≈ 4 chars
 
       if (tokenCount + chunkTokens > maxTokens) {
         break;
