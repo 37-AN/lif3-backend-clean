@@ -5,8 +5,8 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
-    "build": "nest build",
-    "start": "nest start",
+    "build": "npx nest build",
+    "start": "npx nest start", 
     "start:prod": "node dist/main",
     "typeorm": "typeorm-ts-node-commonjs"
   },
