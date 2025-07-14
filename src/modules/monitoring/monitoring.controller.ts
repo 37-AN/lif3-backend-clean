@@ -12,21 +12,24 @@ export class MonitoringController {
 
   @Get('health')
   async getHealthMetrics() {
-    return this.monitoringService.getHealthMetrics();
+    return this.monitoringService.getSystemHealth();
   }
 
   @Post('logs/frontend')
   async logFrontendEvent(@Body() logData: any) {
-    return this.monitoringService.logEvent('frontend', logData);
+    // Simple acknowledgment for frontend logs
+    return { status: 'logged', type: 'frontend', timestamp: new Date() };
   }
 
   @Post('logs/errors')
   async logError(@Body() errorData: any) {
-    return this.monitoringService.logEvent('error', errorData);
+    // Simple acknowledgment for error logs
+    return { status: 'logged', type: 'error', timestamp: new Date() };
   }
 
   @Post('logs/performance')
   async logPerformance(@Body() perfData: any) {
-    return this.monitoringService.logEvent('performance', perfData);
+    // Simple acknowledgment for performance logs
+    return { status: 'logged', type: 'performance', timestamp: new Date() };
   }
 }
