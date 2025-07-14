@@ -46,6 +46,7 @@ async function bootstrap() {
       'https://l1f3-frontend-kmhg.vercel.app',
       'https://frontend-6r8s1aezj-43v3r.vercel.app',
       'https://frontend-4vii9rb8u-43v3r.vercel.app',
+      'https://frontend-98opnbsx4-43v3r.vercel.app',
       configService.get('FRONTEND_URL', 'http://localhost:3000')
     ],
     credentials: true,
