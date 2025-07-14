@@ -3,30 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { LoggerService } from '../../common/logger/logger.service';
 import * as fs from 'fs';
 import * as path from 'path';
-
-interface DeploymentEvent {
-  id: string;
-  timestamp: Date;
-  service: 'render' | 'vercel' | 'github';
-  event: string;
-  status: 'success' | 'failed' | 'pending' | 'cancelled';
-  branch: string;
-  commit: string;
-  message: string;
-  url?: string;
-  duration?: number;
-}
-
-interface NotificationConfig {
-  discord: {
-    enabled: boolean;
-    webhookUrl: string;
-  };
-  slack: {
-    enabled: boolean;
-    webhookUrl: string;
-  };
-}
+import { 
+  DeploymentEvent, 
+  NotificationConfig, 
+  DeploymentStatus, 
+  GitHubEventsResponse, 
+  WebhookResponse, 
+  DeploymentLogsResponse, 
+  StatusOverviewResponse,
+  ServiceStatus
+} from './dashboard.types';
 
 @Injectable()
 export class DashboardService {
@@ -55,7 +41,7 @@ export class DashboardService {
     };
   }
 
-  async getDeploymentStatus() {
+  async getDeploymentStatus(): Promise<DeploymentStatus> {
     try {
       // Get current deployment status from services
       const renderStatus = await this.checkRenderStatus();
@@ -77,7 +63,7 @@ export class DashboardService {
     }
   }
 
-  async getGitHubEvents(limit: number = 20) {
+  async getGitHubEvents(limit: number = 20): Promise<GitHubEventsResponse> {
     try {
       // Filter GitHub events from deployment history
       const githubEvents = this.deploymentEvents
@@ -95,7 +81,7 @@ export class DashboardService {
     }
   }
 
-  async handleGitHubWebhook(payload: any) {
+  async handleGitHubWebhook(payload: any): Promise<WebhookResponse> {
     try {
       const event: DeploymentEvent = {
         id: `github_${Date.now()}`,
@@ -120,7 +106,7 @@ export class DashboardService {
     }
   }
 
-  async handleRenderWebhook(payload: any) {
+  async handleRenderWebhook(payload: any): Promise<WebhookResponse> {
     try {
       const event: DeploymentEvent = {
         id: `render_${Date.now()}`,
@@ -146,7 +132,7 @@ export class DashboardService {
     }
   }
 
-  async handleVercelWebhook(payload: any) {
+  async handleVercelWebhook(payload: any): Promise<WebhookResponse> {
     try {
       const event: DeploymentEvent = {
         id: `vercel_${Date.now()}`,
@@ -172,7 +158,7 @@ export class DashboardService {
     }
   }
 
-  async testNotifications() {
+  async testNotifications(): Promise<WebhookResponse> {
     const testEvent: DeploymentEvent = {
       id: `test_${Date.now()}`,
       timestamp: new Date(),
@@ -188,7 +174,7 @@ export class DashboardService {
     return { status: 'sent', event: testEvent };
   }
 
-  async getDeploymentLogs(service?: string) {
+  async getDeploymentLogs(service?: string): Promise<DeploymentLogsResponse> {
     try {
       let events = this.deploymentEvents;
       
@@ -208,7 +194,7 @@ export class DashboardService {
     }
   }
 
-  async getStatusOverview() {
+  async getStatusOverview(): Promise<StatusOverviewResponse> {
     try {
       const now = new Date();
       const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
