@@ -19,6 +19,7 @@ import { RAGModule } from './modules/rag/rag.module';
 import { JwtModule } from '@nestjs/jwt';
 import { BusinessStrategyModule } from './modules/business-strategy/business-strategy.module';
 import { MonitoringModule } from './modules/monitoring/monitoring.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -50,6 +51,8 @@ import { MonitoringModule } from './modules/monitoring/monitoring.module';
     BusinessStrategyModule,
     // Monitoring module
     MonitoringModule,
+    // Dashboard module
+    DashboardModule,
   ],
   controllers: [
     FinancialController,
