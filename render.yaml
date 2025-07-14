@@ -3,11 +3,19 @@ services:
     name: lif3-backend-clean
     env: node
     plan: free
-    buildCommand: npm install && npm run build
+    branch: main
+    buildCommand: npm ci && npm run build:production
     startCommand: npm run start:prod
     healthCheckPath: /health
+    autoDeploy: true
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
+      - key: ENABLE_KEEP_ALIVE
+        value: true
+      - key: OPTIMIZE_MEMORY
+        value: true
+      - key: GITHUB_WEBHOOK_SECRET
+        value: lif3_github_webhook_secret_2025
