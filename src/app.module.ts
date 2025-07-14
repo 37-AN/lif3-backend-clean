@@ -18,6 +18,7 @@ import { HealthService } from './modules/health/health.service';
 import { RAGModule } from './modules/rag/rag.module';
 import { JwtModule } from '@nestjs/jwt';
 import { BusinessStrategyModule } from './modules/business-strategy/business-strategy.module';
+import { MonitoringModule } from './modules/monitoring/monitoring.module';
 
 @Module({
   imports: [
@@ -47,6 +48,8 @@ import { BusinessStrategyModule } from './modules/business-strategy/business-str
     RAGModule,
     // Business Strategy module
     BusinessStrategyModule,
+    // Monitoring module
+    MonitoringModule,
   ],
   controllers: [
     FinancialController,

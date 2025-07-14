@@ -89,6 +89,17 @@ export class LIF3WebSocketGateway implements OnGatewayInit, OnGatewayConnection,
         client.disconnect();
         return;
       }
+      
+      // Accept any JWT-format token for development/deployment
+      if (!token.includes('.')) {
+        this.logger.logWebSocketEvent('CONNECTION_REJECTED', { 
+          reason: 'INVALID_TOKEN_FORMAT',
+          clientId,
+          ipAddress
+        });
+        client.disconnect();
+        return;
+      }
 
       // Mock user extraction (replace with actual JWT verification)
       const user: WebSocketUser = {

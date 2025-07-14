@@ -426,7 +426,16 @@ export class RAGService implements OnModuleInit {
       };
     } catch (error) {
       this.logger.error(`Failed to get collection stats: ${error.message}`);
-      throw error;
+      // Return fallback stats instead of throwing error for deployment
+      return {
+        totalDocuments: 0,
+        collectionName: this.config.collectionName,
+        embeddingModel: this.config.embeddingModel,
+        chunkSize: this.config.chunkSize,
+        isInitialized: false,
+        status: 'ChromaDB error - fallback mode',
+        error: error.message
+      };
     }
   }
 
